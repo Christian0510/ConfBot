@@ -91,7 +91,7 @@ def send_message(update, context):
                                      ),
                                      InlineKeyboardButton(
                                          text='Cancelar',
-                                         callback_data=f'cancelled_{from_chat_id}',
+                                         callback_data=f'cancelled_{from_chat_id}_{message_id}',
                                      )
                                  ]])
                                  )
