@@ -56,6 +56,8 @@ def response(update, context):
             chat_id=user_id,
             text=f'{cancelled_message}'
         )
+        is_message_checked = True
+        check_message(update, context, message_id)
 
 
 def check_message(update, context, message_id):
@@ -63,7 +65,7 @@ def check_message(update, context, message_id):
 
     while is_message_checked:
         for user in SUDO_USERS:
-            update.bot.edit_message_text(
+            context.bot.edit_message_text(
                 text='La confesion ya ha sido manejada por otro administrador',
                 chat_id=update.effective_chat.id,
                 message_id=message_id
