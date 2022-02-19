@@ -9,6 +9,8 @@ CHANNEL_ID = Cf.CHANNEL_ID
 
 SUDO_USERS = Cf.SUDO_USERS
 
+is_message_checked = False
+
 start_message = '''
 Hola, bienvenido al bot de Confesiones. 😎 
 Puede contactarnos por este bot.
@@ -31,9 +33,11 @@ def start(update, context):
 
 
 def response(update, context):
+    global is_message_checked
     data = update.callback_query.data
     option = data.split("_")[0]
     user_id = data.split("_")[1]
+    message_id = data.split("_")[2]
     text = update.callback_query.message.text
 
     if option == 'accepted':
@@ -45,18 +49,27 @@ def response(update, context):
             chat_id=user_id,
             text=f'{accepted_message}'
         )
+        is_message_checked = True
+        check_message(update, context, message_id)
     elif option == 'cancelled':
         context.bot.send_message(
             chat_id=user_id,
             text=f'{cancelled_message}'
         )
 
-    update.callback_query.message.edit_text('Recibido ☺')
-    for sudo_id in SUDO_USERS:
-        context.bot.send_message(
-            chat_id=sudo_id,
-            text='Ya la confesion ha sido manejada por otro administrador, no es requerida ninguna accion 😊'
-        )
+
+def check_message(update, context, message_id):
+    global is_message_checked
+
+    while is_message_checked:
+        for user in SUDO_USERS:
+            update.bot.edit_message_text(
+                text='La confesion ya ha sido manejada por otro administrador',
+                chat_id=update.effective_chat.id,
+                message_id=message_id
+            )
+        is_message_checked = False
+
 
     # context.bot.send_message(
     #     chat_id=update.effective_chat.id,
@@ -72,7 +85,7 @@ def send_message(update, context):
                                  reply_markup=InlineKeyboardMarkup([[
                                      InlineKeyboardButton(
                                          text='Aceptar',
-                                         callback_data=f'accepted_{from_chat_id}',
+                                         callback_data=f'accepted_{from_chat_id}_{message_id}',
                                      ),
                                      InlineKeyboardButton(
                                          text='Cancelar',
@@ -80,6 +93,7 @@ def send_message(update, context):
                                      )
                                  ]])
                                  )
+
 
 
 def info(update, context):
