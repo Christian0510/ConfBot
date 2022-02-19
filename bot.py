@@ -37,7 +37,6 @@ def response(update, context):
     data = update.callback_query.data
     option = data.split("_")[0]
     user_id = data.split("_")[1]
-    message_id = data.split("_")[2]
     text = update.callback_query.message.text
 
     if option == 'accepted':
@@ -50,14 +49,14 @@ def response(update, context):
             text=f'{accepted_message}'
         )
         is_message_checked = True
-        check_message(update, context, message_id)
+        check_message(update, context)
     elif option == 'cancelled':
         context.bot.send_message(
             chat_id=user_id,
             text=f'{cancelled_message}'
         )
         is_message_checked = True
-        check_message(update, context, message_id)
+        check_message(update, context)
 
 
 def check_message(update, context, message_id):
@@ -67,8 +66,8 @@ def check_message(update, context, message_id):
         for user in SUDO_USERS:
             context.bot.edit_message_text(
                 text='La confesion ya ha sido manejada por otro administrador',
-                chat_id=update.effective_chat.id,
-                message_id=message_id
+                chat_id=user,
+                message_id=update.effective_message.message_id
             )
         is_message_checked = False
 
@@ -87,11 +86,11 @@ def send_message(update, context):
                                  reply_markup=InlineKeyboardMarkup([[
                                      InlineKeyboardButton(
                                          text='Aceptar',
-                                         callback_data=f'accepted_{from_chat_id}_{message_id}',
+                                         callback_data=f'accepted_{from_chat_id}',
                                      ),
                                      InlineKeyboardButton(
                                          text='Cancelar',
-                                         callback_data=f'cancelled_{from_chat_id}_{message_id}',
+                                         callback_data=f'cancelled_{from_chat_id}',
                                      )
                                  ]])
                                  )
