@@ -1,3 +1,4 @@
+import os
 import json
 
 # Solo si se prefiere usar un JSON en lugar de un archivo de configuracion de python
@@ -7,8 +8,8 @@ def get_data(key):
 
 
 class Config(object):
-    TOKEN = get_data('token')
+    TOKEN = os.getenv('BOT_TOKEN')
 
-    CHANNEL_ID = get_data('channel')
+    CHANNEL_ID = os.getenv('CHANNEL_ID')
 
-    SUDO_USERS = get_data('sudo')
+    ADMIN_GROUP_ID = os.getenv('ADMIN_GROUP_ID')
