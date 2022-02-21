@@ -90,6 +90,7 @@ def send_message(update, context):
                                      callback_data=f'cancelled_{from_chat_id}',
                                  )
                              ]])
+                            )
 
 
 def info(update, context):
