@@ -12,4 +12,4 @@ class Config(object):
 
     CHANNEL_ID = os.getenv('CHANNEL_ID')
 
-    SUDO_USERS = get_data('sudo')
+    ADMIN_GROUP_ID = os.getenv('ADMIN_GROUP_ID')
