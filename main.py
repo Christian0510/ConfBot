@@ -10,16 +10,20 @@ from pyrogram.types import (
 
 
 try:
+    API_ID = os.environ["API_ID"]
+    
+    API_HASH = os.environ["API_HASH"]
+    
     TOKEN = os.environ["BOT_TOKEN"]
 
     CHANNEL_ID = os.environ["CHANNEL_ID"]
 
-    ADMIN_GROUP = os.environ("ADMIN_GROUP_ID")
+    ADMIN_GROUP = os.environ["ADMIN_GROUP_ID"]
 except:
     print("config not set", e)
     exit()
 
-bot = pyrogram.Client("bot", bot_token=TOKEN)
+bot = pyrogram.Client("bot",api_id=API_ID, api_hash=API_HASH, bot_token=TOKEN)
 
 start_message = """
 Hola, bienvenido al bot de Confesiones. 😎
