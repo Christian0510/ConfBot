@@ -10,7 +10,7 @@ from pyrogram.types import (
 
 
 try:
-    TOKEN = os.environ('TOKEN')
+    TOKEN = os.environ9('BOT_TOKEN')
 
     CHANNEL_ID = os.environ('CHANNEL_ID')
 
