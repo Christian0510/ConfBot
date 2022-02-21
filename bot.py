@@ -58,6 +58,7 @@ def response(update, context):
             chat_id=user_id,
             text=f'{cancelled_message}'
         )
+
         check_message(update, context)
 
 
@@ -67,6 +68,7 @@ def check_message(update, context):
         chat_id=ADMIN_GROUP,
         message_id=update.effective_message.message_id
     )
+
 
     # context.bot.send_message(
     #     chat_id=update.effective_chat.id,
@@ -88,7 +90,6 @@ def send_message(update, context):
                                      callback_data=f'cancelled_{from_chat_id}',
                                  )
                              ]])
-                             )
 
 
 def info(update, context):
