@@ -46,7 +46,8 @@ def response(update, context):
         context.bot.send_message(
             chat_id=CHANNEL_ID,
             text=f'{text}'
-                 f'🤖 AniS3ka_Confessions_bot'
+                 f'      '
+                 f'🤖 @AniS3ka_Confessions_bot'
         )
         context.bot.send_message(
             chat_id=user_id,
