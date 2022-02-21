@@ -23,6 +23,11 @@ cancelled_message = '''
 Lo sentimos 😟 su confesion ha sido rechazada por violar alguna de las reglas del canal, mejor suerte la proxima. 😉
 '''
 
+about_text = '''
+This bot was created by @Unknown_user_2386 for entertainment purpose of S3KAI🎭EXTRA channel.
+GitHub repo: https://hithub.com/Christian0510/ConfBot
+'''
+
 
 def start(update, context):
     context.bot.send_message(
@@ -41,6 +46,7 @@ def response(update, context):
         context.bot.send_message(
             chat_id=CHANNEL_ID,
             text=f'{text}'
+                 f'🤖 AniS3ka_Confessions_bot'
         )
         context.bot.send_message(
             chat_id=user_id,
@@ -95,6 +101,13 @@ def info(update, context):
     )
 
 
+def about(update, context):
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=about_text
+    )
+
+
 def channel_help(update, context):
     chat_id = update.effective_chat.id
 
@@ -110,6 +123,7 @@ def main():
 
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(CommandHandler('info', info))
+    dispatcher.add_handler(CommandHandler('about', about))
     dispatcher.add_handler(CallbackQueryHandler(response))
     dispatcher.add_handler(
         MessageHandler(filters=Filters.chat_type.channel & Filters.regex(re.compile('/help', re.IGNORECASE)),
