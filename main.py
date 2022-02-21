@@ -8,19 +8,13 @@ from pyrogram.types import (
     InlineKeyboardButton,
 )
 
-try:
-    from dotenv import load_dotenv
-
-    load_dotenv()
-except:
-    pass
 
 try:
-    TOKEN = os.environ["TOKEN"]
+    TOKEN = os.environ('TOKEN')
 
-    CHANNEL_ID = os.environ["CHANNEL_ID"]
+    CHANNEL_ID = os.environ('CHANNEL_ID')
 
-    ADMIN_GROUP = os.environ["ADMIN_GROUP"]
+    ADMIN_GROUP = os.environ('ADMIN_GROUP')
 except:
     print("config not set")
     exit()
