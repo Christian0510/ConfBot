@@ -98,16 +98,19 @@ async def send_message(_, message: Message):
         ADMIN_GROUP,
         reply_markup=InlineKeyboardMarkup(
             [
-                InlineKeyboardButton(
-                    "Aceptar", callback_data=f"accepted_{from_chat_id}"
-                ),
-                InlineKeyboardButton(
-                    "Cancelar", callback_data=f"cancelled_{from_chat_id}"
-                ),
+                [
+                    InlineKeyboardButton(
+                        "Aceptar", callback_data=f"accepted_{from_chat_id}"
+                    ),
+                    InlineKeyboardButton(
+                        "Cancelar", callback_data=f"cancelled_{from_chat_id}"
+                    ),
+                ]
             ]
         ),
     )
 
 
 if __name__ == "__main__":
+    print("Bot started")
     bot.run()
