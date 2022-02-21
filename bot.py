@@ -20,7 +20,7 @@ Felicidades!! 😀, su confesion ha sido aceptada por la administracion 😏 y s
 '''
 
 cancelled_message = '''
-Lo sentimos 😟 su confesion ha sido rechazada por violar alguna de las reglas del canal, mejor suerte la proxima. 😉
+Lo sentimos 😟 su confesion ha sido rechazada, mejor suerte la proxima. 😉
 '''
 
 about_text = '''
