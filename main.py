@@ -10,13 +10,13 @@ from pyrogram.types import (
 
 
 try:
-    TOKEN = os.environ('BOT_TOKEN')
+    TOKEN = os.environ["BOT_TOKEN"]
 
-    CHANNEL_ID = os.environ('CHANNEL_ID')
+    CHANNEL_ID = os.environ["CHANNEL_ID"]
 
-    ADMIN_GROUP = os.environ('ADMIN_GROUP')
+    ADMIN_GROUP = os.environ("ADMIN_GROUP_ID")
 except:
-    print("config not set")
+    print("config not set", e)
     exit()
 
 bot = pyrogram.Client("bot", bot_token=TOKEN)
