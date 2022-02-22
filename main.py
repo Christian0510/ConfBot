@@ -8,22 +8,28 @@ from pyrogram.types import (
     InlineKeyboardButton,
 )
 
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except:
+    pass
 
 try:
     API_ID = os.environ["API_ID"]
-    
+
     API_HASH = os.environ["API_HASH"]
-    
+
     TOKEN = os.environ["BOT_TOKEN"]
 
     CHANNEL_ID = os.environ["CHANNEL_ID"]
 
     ADMIN_GROUP = os.environ["ADMIN_GROUP_ID"]
-except:
+except Exception as e:
     print("config not set", e)
     exit()
 
-bot = pyrogram.Client("bot",api_id=API_ID, api_hash=API_HASH, bot_token=TOKEN)
+bot = pyrogram.Client("bot", api_id=API_ID, api_hash=API_HASH, bot_token=TOKEN)
 
 start_message = """
 Hola, bienvenido al bot de Confesiones. 😎
@@ -92,16 +98,19 @@ async def send_message(_, message: Message):
         ADMIN_GROUP,
         reply_markup=InlineKeyboardMarkup(
             [
-                InlineKeyboardButton(
-                    "Aceptar", callback_data=f"accepted_{from_chat_id}"
-                ),
-                InlineKeyboardButton(
-                    "Cancelar", callback_data=f"cancelled_{from_chat_id}"
-                ),
+                [
+                    InlineKeyboardButton(
+                        "Aceptar", callback_data=f"accepted_{from_chat_id}"
+                    ),
+                    InlineKeyboardButton(
+                        "Cancelar", callback_data=f"cancelled_{from_chat_id}"
+                    ),
+                ]
             ]
         ),
     )
 
 
 if __name__ == "__main__":
+    print("Bot started")
     bot.run()
