@@ -50,6 +50,10 @@ This bot was created by @Unknown_user_2386 for entertainment purpose of S3KAI�
 GitHub repo: https://github.com/Christian0510/ConfBot
 """
 
+required_len_not_reached = """
+Lo sentimos, su confesion no alcanza la cantidad de caracteres minimos requeridos. (x>20)
+"""
+
 
 @bot.on_message(filters.command("start"))
 async def start(_, message: Message):
@@ -79,7 +83,8 @@ async def response(_, callback_query: CallbackQuery):
 
     if option == "accepted":
         await bot.send_message(
-            CHANNEL_ID, f"{callback_query.message.text}\n🤖 @AniS3ka_Confessions_bot"
+            CHANNEL_ID,
+            f"{callback_query.message.text}\n🤖 @AniS3ka_Confessions_bot\n Main Channel: @Anime_S3kai",
         )
         await bot.send_message(user_id, accepted_message)
 
@@ -94,6 +99,10 @@ async def response(_, callback_query: CallbackQuery):
 @bot.on_message(filters.private & filters.text)
 async def send_message(_, message: Message):
     from_chat_id = message.chat.id
+
+    if len(message.text) < 20:
+        return
+
     await message.copy(
         ADMIN_GROUP,
         reply_markup=InlineKeyboardMarkup(
