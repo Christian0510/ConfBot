@@ -50,6 +50,10 @@ This bot was created by @Unknown_user_2386 for entertainment purpose of S3KAI�
 GitHub repo: https://github.com/Christian0510/ConfBot
 """
 
+required_len_not_reached = '''
+Lo sentimos, su confesion no alcanza la cantidad de caracteres minimos requeridos. (x>20)
+'''
+
 
 @bot.on_message(filters.command("start"))
 async def start(_, message: Message):
@@ -76,16 +80,15 @@ async def channel_help(_, message: Message):
 @bot.on_callback_query()
 async def response(_, callback_query: CallbackQuery):
     option, user_id = callback_query.data.split("_")
-
+  
     if option == "accepted":
         await bot.send_message(
-            CHANNEL_ID, f"{callback_query.message.text}\n🤖 @AniS3ka_Confessions_bot"
+            CHANNEL_ID, f"{callback_query.message.text}\n🤖 @AniS3ka_Confessions_bot\n Main Channel: @Anime_S3kai"
         )
         await bot.send_message(user_id, accepted_message)
-
     elif option == "cancelled":
         await bot.send_message(user_id, cancelled_message)
-
+    
     await callback_query.message.edit(
         text="Done", reply_markup=None  # TODO Done ? idk, pon otro mensaje o algo
     )
@@ -94,21 +97,26 @@ async def response(_, callback_query: CallbackQuery):
 @bot.on_message(filters.private & filters.text)
 async def send_message(_, message: Message):
     from_chat_id = message.chat.id
-    await message.copy(
-        ADMIN_GROUP,
-        reply_markup=InlineKeyboardMarkup(
-            [
+    message_text = message.text
+
+    if len(message_text) > 20:
+        await message.copy(
+            ADMIN_GROUP,
+            reply_markup=InlineKeyboardMarkup(
                 [
-                    InlineKeyboardButton(
-                        "Aceptar", callback_data=f"accepted_{from_chat_id}"
-                    ),
-                    InlineKeyboardButton(
-                        "Cancelar", callback_data=f"cancelled_{from_chat_id}"
-                    ),
+                    [
+                        InlineKeyboardButton(
+                            "Aceptar", callback_data=f"accepted_{from_chat_id}"
+                        ),
+                        InlineKeyboardButton(
+                            "Cancelar", callback_data=f"cancelled_{from_chat_id}"
+                        ),
+                    ]
                 ]
-            ]
-        ),
-    )
+            ),
+        )
+    else:
+        await bot.send_message(from_chat_id, required_len_not_reached)
 
 
 if __name__ == "__main__":
