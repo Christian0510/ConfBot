@@ -101,6 +101,7 @@ async def send_message(_, message: Message):
     from_chat_id = message.chat.id
 
     if len(message.text) < 20:
+        await message.reply(required_len_not_reached)
         return
 
     await message.copy(
