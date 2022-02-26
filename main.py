@@ -24,7 +24,7 @@ try:
 
     CHANNEL_ID = os.environ["CHANNEL_ID"]
 
-    ADMIN_GROUP = os.environ["ADMIN_GROUP_ID"]
+    ADMIN_GROUP = int(os.environ["ADMIN_GROUP_ID"])
 except Exception as e:
     print("config not set", e)
     exit()
@@ -82,17 +82,23 @@ async def response(_, callback_query: CallbackQuery):
     option, user_id = callback_query.data.split("_")
 
     if option == "accepted":
-        await bot.send_message(
+        channel_message = await bot.send_message(
             CHANNEL_ID,
-            f"{callback_query.message.text}\n🤖 @AniS3ka_Confessions_bot\n Main Channel: @Anime_S3kai",
+            f"{callback_query.message.text}\n🤖 {CHANNEL_ID}\n Main Channel: @Anime_S3kai",
+        )
+        await callback_query.message.edit(
+            text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
+            reply_markup=None,
         )
         await bot.send_message(user_id, accepted_message)
+        return
 
     elif option == "cancelled":
         await bot.send_message(user_id, cancelled_message)
 
     await callback_query.message.edit(
-        text="Done", reply_markup=None  # TODO Done ? idk, pon otro mensaje o algo
+        text="Done",
+        reply_markup=None,
     )
 
 
