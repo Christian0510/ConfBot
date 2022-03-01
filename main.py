@@ -95,6 +95,7 @@ async def channel_help(_, message: Message):
 @bot.on_callback_query()
 async def response(_, callback_query: CallbackQuery):
     option, user_id = callback_query.data.split("_")
+    user_id = int(user_id)
 
     if option == "accepted":
         channel_message = await bot.send_message(
@@ -159,7 +160,9 @@ async def send_message(_, message: Message):
 async def banano(_, message: Message):
     message = message.reply_to_message
 
-    user_id = message.reply_markup.inline_keyboard[0][0].callback_data.split("_")[1]
+    user_id = int(
+        message.reply_markup.inline_keyboard[0][0].callback_data.split("_")[1]
+    )
 
     banned = bannedUser(user_id=int(user_id))
     await banned.save()
