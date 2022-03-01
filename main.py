@@ -184,7 +184,7 @@ async def init():
     # also specify the app name of "models"
     # which contain models from "app.models"
     await Tortoise.init(
-        db_url=DATABASE_URL,
+        db_url=DATABASE_URL.replace("postgresql://", "postgres://", 1),
         modules={"models": ["models"]},
     )
     # Generate the schema
