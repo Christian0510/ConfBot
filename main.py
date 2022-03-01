@@ -1,12 +1,17 @@
+import asyncio
 import os
+
 import pyrogram
 from pyrogram import filters
 from pyrogram.types import (
-    Message,
     CallbackQuery,
-    InlineKeyboardMarkup,
     InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
 )
+from tortoise import Tortoise
+
+from models import bannedUser
 
 try:
     from dotenv import load_dotenv
@@ -25,6 +30,8 @@ try:
     CHANNEL_ID = os.environ["CHANNEL_ID"]
 
     ADMIN_GROUP = int(os.environ["ADMIN_GROUP_ID"])
+
+    DATABASE_URL = os.environ["DATABASE_URL"]
 except Exception as e:
     print("config not set", e)
     exit()
@@ -52,6 +59,14 @@ GitHub repo: https://github.com/Christian0510/ConfBot
 
 required_len_not_reached = """
 Lo sentimos, su confesion no alcanza la cantidad de caracteres minimos requeridos. (x>20)
+"""
+
+banned_message = """
+Ha sido baneado del uso del bot, contacte con la administracion para apelar
+"""
+
+unbanned_message = """
+Ha sido desbaneado
 """
 
 
@@ -96,6 +111,13 @@ async def response(_, callback_query: CallbackQuery):
     elif option == "cancelled":
         await bot.send_message(user_id, cancelled_message)
 
+    elif option == "unban":
+        banned = await bannedUser.filter(user_id=int(user_id)).first()
+        await banned.delete()
+        await callback_query.message.edit("User unbanned", reply_markup=None)
+        await bot.send_message(user_id, unbanned_message)
+        return
+
     await callback_query.message.edit(
         text="Done",
         reply_markup=None,
@@ -104,7 +126,13 @@ async def response(_, callback_query: CallbackQuery):
 
 @bot.on_message(filters.private & filters.text)
 async def send_message(_, message: Message):
-    from_chat_id = message.chat.id
+    user_id = message.chat.id
+
+    banned = await bannedUser.filter(user_id=int(user_id)).first()
+
+    if banned:
+        await message.reply(banned_message)
+        return
 
     if len(message.text) < 20:
         await message.reply(required_len_not_reached)
@@ -116,10 +144,10 @@ async def send_message(_, message: Message):
             [
                 [
                     InlineKeyboardButton(
-                        "Aceptar", callback_data=f"accepted_{from_chat_id}"
+                        "Aceptar", callback_data=f"accepted_{user_id}"
                     ),
                     InlineKeyboardButton(
-                        "Cancelar", callback_data=f"cancelled_{from_chat_id}"
+                        "Cancelar", callback_data=f"cancelled_{user_id}"
                     ),
                 ]
             ]
@@ -127,6 +155,44 @@ async def send_message(_, message: Message):
     )
 
 
+@bot.on_message(filters.command("banano"))
+async def banano(_, message: Message):
+    message = message.reply_to_message
+
+    user_id = message.reply_markup.inline_keyboard[0][0].callback_data.split("_")[1]
+
+    banned = bannedUser(user_id=int(user_id))
+    await banned.save()
+    await message.edit(
+        "Banned user",
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "Unban",
+                        callback_data=f"unban_{user_id}",
+                    ),
+                ]
+            ]
+        ),
+    )
+    await bot.send_message(user_id, banned_message)
+
+
+async def init():
+    # Here we connect to a SQLite DB file.
+    # also specify the app name of "models"
+    # which contain models from "app.models"
+    await Tortoise.init(
+        db_url=DATABASE_URL,
+        modules={"models": ["models"]},
+    )
+    # Generate the schema
+    await Tortoise.generate_schemas(safe=True)
+
+
 if __name__ == "__main__":
     print("Bot started")
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(init())
     bot.run()
