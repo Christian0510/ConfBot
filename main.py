@@ -135,7 +135,7 @@ async def send_message(_, message: Message):
         await message.reply(banned_message)
         return
 
-    if len(message.text) < 20:
+    if message.text and len(message.text) < 20:
         await message.reply(required_len_not_reached)
         return
 
