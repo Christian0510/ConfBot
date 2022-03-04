@@ -1,12 +1,17 @@
+import asyncio
 import os
+
 import pyrogram
 from pyrogram import filters
 from pyrogram.types import (
-    Message,
     CallbackQuery,
-    InlineKeyboardMarkup,
     InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
 )
+from tortoise import Tortoise
+
+from models import bannedUser
 
 try:
     from dotenv import load_dotenv
@@ -24,7 +29,9 @@ try:
 
     CHANNEL_ID = os.environ["CHANNEL_ID"]
 
-    ADMIN_GROUP = os.environ["ADMIN_GROUP_ID"]
+    ADMIN_GROUP = int(os.environ["ADMIN_GROUP_ID"])
+
+    DATABASE_URL = os.environ["DATABASE_URL"]
 except Exception as e:
     print("config not set", e)
     exit()
@@ -50,9 +57,17 @@ This bot was created by @Unknown_user_2386 for entertainment purpose of S3KAI�
 GitHub repo: https://github.com/Christian0510/ConfBot
 """
 
-required_len_not_reached = '''
+required_len_not_reached = """
 Lo sentimos, su confesion no alcanza la cantidad de caracteres minimos requeridos. (x>20)
-'''
+"""
+
+banned_message = """
+Ha sido baneado del uso del bot, contacte con la administracion para apelar
+"""
+
+unbanned_message = """
+Ha sido desbaneado
+"""
 
 
 @bot.on_message(filters.command("start"))
@@ -80,45 +95,107 @@ async def channel_help(_, message: Message):
 @bot.on_callback_query()
 async def response(_, callback_query: CallbackQuery):
     option, user_id = callback_query.data.split("_")
-  
+    user_id = int(user_id)
+
     if option == "accepted":
-        await bot.send_message(
-            CHANNEL_ID, f"{callback_query.message.text}\n🤖 @AniS3ka_Confessions_bot\n Main Channel: @Anime_S3kai"
+        channel_message = await bot.send_message(
+            CHANNEL_ID,
+            f"{callback_query.message.text}\n🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
+        )
+        await callback_query.message.edit(
+            text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
+            reply_markup=None,
         )
         await bot.send_message(user_id, accepted_message)
+        return
+
     elif option == "cancelled":
         await bot.send_message(user_id, cancelled_message)
-    
+
+    elif option == "unban":
+        banned = await bannedUser.filter(user_id=int(user_id)).first()
+        await banned.delete()
+        await callback_query.message.edit("User unbanned", reply_markup=None)
+        await bot.send_message(user_id, unbanned_message)
+        return
+
     await callback_query.message.edit(
-        text="Done", reply_markup=None  # TODO Done ? idk, pon otro mensaje o algo
+        text="Done",
+        reply_markup=None,
     )
 
 
-@bot.on_message(filters.private & filters.text)
+@bot.on_message(filters.private & ~filters.sticker)
 async def send_message(_, message: Message):
-    from_chat_id = message.chat.id
-    message_text = message.text
+    user_id = message.chat.id
 
-    if len(message_text) > 20:
-        await message.copy(
-            ADMIN_GROUP,
-            reply_markup=InlineKeyboardMarkup(
+    banned = await bannedUser.filter(user_id=int(user_id)).first()
+
+    if banned:
+        await message.reply(banned_message)
+        return
+
+    if message.text and len(message.text) < 20:
+        await message.reply(required_len_not_reached)
+        return
+
+    await message.copy(
+        ADMIN_GROUP,
+        reply_markup=InlineKeyboardMarkup(
+            [
                 [
-                    [
-                        InlineKeyboardButton(
-                            "Aceptar", callback_data=f"accepted_{from_chat_id}"
-                        ),
-                        InlineKeyboardButton(
-                            "Cancelar", callback_data=f"cancelled_{from_chat_id}"
-                        ),
-                    ]
+                    InlineKeyboardButton(
+                        "Aceptar", callback_data=f"accepted_{user_id}"
+                    ),
+                    InlineKeyboardButton(
+                        "Cancelar", callback_data=f"cancelled_{user_id}"
+                    ),
                 ]
-            ),
-        )
-    else:
-        await bot.send_message(from_chat_id, required_len_not_reached)
+            ]
+        ),
+    )
+
+
+@bot.on_message(filters.command("banano"))
+async def banano(_, message: Message):
+    message = message.reply_to_message
+
+    user_id = int(
+        message.reply_markup.inline_keyboard[0][0].callback_data.split("_")[1]
+    )
+
+    banned = bannedUser(user_id=int(user_id))
+    await banned.save()
+    await message.edit(
+        f"{message.text[:4000]}\n\n`Banned user`",
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "Unban",
+                        callback_data=f"unban_{user_id}",
+                    ),
+                ]
+            ]
+        ),
+    )
+    await bot.send_message(user_id, banned_message)
+
+
+async def init():
+    # Here we connect to a SQLite DB file.
+    # also specify the app name of "models"
+    # which contain models from "app.models"
+    await Tortoise.init(
+        db_url=DATABASE_URL.replace("postgresql://", "postgres://", 1),
+        modules={"models": ["models"]},
+    )
+    # Generate the schema
+    await Tortoise.generate_schemas(safe=True)
 
 
 if __name__ == "__main__":
     print("Bot started")
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(init())
     bot.run()
