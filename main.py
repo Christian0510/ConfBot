@@ -167,7 +167,7 @@ async def banano(_, message: Message):
     banned = bannedUser(user_id=int(user_id))
     await banned.save()
     await message.edit(
-        "Banned user",
+        f"{message.text[:4000]}\n\n`Banned user`",
         reply_markup=InlineKeyboardMarkup(
             [
                 [
