@@ -125,7 +125,7 @@ async def response(_, callback_query: CallbackQuery):
     )
 
 
-@bot.on_message(filters.private & filters.text)
+@bot.on_message(filters.private & ~filters.sticker)
 async def send_message(_, message: Message):
     user_id = message.chat.id
 
