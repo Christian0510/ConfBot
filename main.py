@@ -187,7 +187,7 @@ async def respond_to_user(_, message: Message):
 
     try:
         args = message.text.split(None, 1)[1]
-        user_id = message.reply_to_message.reply_markup.inline_keyboard[0][0].callback_data.split('_')[1]
+        user_id = int(message.reply_to_message.reply_markup.inline_keyboard[0][0].callback_data.split('_')[1])
         await bot.send_message(
             user_id,
             text=args
