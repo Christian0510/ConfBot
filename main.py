@@ -182,6 +182,24 @@ async def banano(_, message: Message):
     await bot.send_message(user_id, banned_message)
 
 
+@bot.on_message(filters.command(['respond']))
+async def respond_to_user(_, message: Message):
+
+    try:
+        args = message.text.split(None, 1)[1]
+        user_id = message.reply_to_message.reply_markup.inline_keyboard[0][0].callback_data.split('_')[1]
+        await bot.send_message(
+            user_id,
+            text=args
+            )
+    except IndexError:
+        await message.reply('Por favor agrega los argumentos XD so Juan.')
+    except AttributeError:
+        await message.reply('Responde al mensaje del usuario que quieres responder animal 🤧')
+
+    await message.reply('Se ha enviado su respuesta exitosamente.')
+
+
 async def init():
     # Here we connect to a SQLite DB file.
     # also specify the app name of "models"
