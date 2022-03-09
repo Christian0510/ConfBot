@@ -96,17 +96,39 @@ async def channel_help(_, message: Message):
 async def response(_, callback_query: CallbackQuery):
     option, user_id = callback_query.data.split("_")
     user_id = int(user_id)
+    type = callback_query.message.media
 
     if option == "accepted":
-        channel_message = await callback_query.message.copy(
-            CHANNEL_ID,
-            f"{callback_query.message.text}\n🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
-            reply_markup=None,
-        )
-        await callback_query.message.edit(
-            text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
-            reply_markup=None,
-        )
+        if type == 'photo':
+            channel_message = await callback_query.message.copy(
+                CHANNEL_ID,
+                f"{callback_query.message.caption}\n🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
+                reply_markup=None,
+            )
+            await callback_query.message.edit(
+                text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
+                reply_markup=None,
+            )
+        elif type == 'voice':
+            channel_message = await callback_query.message.copy(
+                CHANNEL_ID,
+                f"🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
+                reply_markup=None,
+            )
+            await callback_query.message.edit(
+                text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
+                reply_markup=None,
+            )
+        else:
+            channel_message = await bot.send_message(
+                CHANNEL_ID,
+                f"{callback_query.message.text}\n🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
+                reply_markup=None,
+            )
+            await callback_query.message.edit(
+                text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
+                reply_markup=None,
+            )
         await bot.send_message(user_id, accepted_message)
         return
 
