@@ -98,9 +98,10 @@ async def response(_, callback_query: CallbackQuery):
     user_id = int(user_id)
 
     if option == "accepted":
-        channel_message = await bot.send_message(
+        channel_message = await callback_query.message.copy(
             CHANNEL_ID,
             f"{callback_query.message.text}\n🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
+            reply_markup=None,
         )
         await callback_query.message.edit(
             text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
