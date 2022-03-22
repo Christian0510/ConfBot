@@ -1,5 +1,5 @@
 import asyncio
-import os
+from decouple import config
 
 import pyrogram
 from pyrogram import filters
@@ -21,17 +21,17 @@ except:
     pass
 
 try:
-    API_ID = os.environ["API_ID"]
+    API_ID = config("API_ID", default=None, cast=int)
 
-    API_HASH = os.environ["API_HASH"]
+    API_HASH = config("API_HASH", default=None)
 
-    TOKEN = os.environ["BOT_TOKEN"]
+    TOKEN = config("BOT_TOKEN", default=None)
 
-    CHANNEL_ID = os.environ["CHANNEL_ID"]
+    CHANNEL_ID = config("CHANNEL_ID", default=None)
 
-    ADMIN_GROUP = int(os.environ["ADMIN_GROUP_ID"])
+    ADMIN_GROUP = config("ADMIN_GROUP_ID", default=None)
 
-    DATABASE_URL = os.environ["DATABASE_URL"]
+    DATABASE_URL = config("DATABASE_URL", default=None)
 except Exception as e:
     print("config not set", e)
     exit()
