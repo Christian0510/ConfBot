@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  worker:
+    build: .
+    environment:
+      API_ID: $API_ID
+      API_HASH: $API_HASH
+      BOT_TOKEN: $BOT_TOKEN
+      CHANNEL_ID: $CHANNEL_ID
+      ADMIN_GROUP_ID: $ADMIN_GROUP_ID
+      DATABASE_URL: $DATABASE_URL
