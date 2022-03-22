@@ -1,3 +1,4 @@
 pyrogram
+python-decouple
 tgcrypto
 tortoise-orm[asyncpg]
