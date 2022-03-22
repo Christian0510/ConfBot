@@ -99,24 +99,16 @@ async def response(_, callback_query: CallbackQuery):
     type = callback_query.message.media
 
     if option == "accepted":
-        if type == 'photo':
+        if type == "photo":
             channel_message = await callback_query.message.copy(
                 CHANNEL_ID,
                 f"{callback_query.message.caption}\n🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
                 reply_markup=None,
             )
-            await callback_query.message.edit(
-                text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
-                reply_markup=None,
-            )
-        elif type == 'voice':
+        elif type == "voice":
             channel_message = await callback_query.message.copy(
                 CHANNEL_ID,
                 f"🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
-                reply_markup=None,
-            )
-            await callback_query.message.edit(
-                text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
                 reply_markup=None,
             )
         else:
@@ -125,10 +117,10 @@ async def response(_, callback_query: CallbackQuery):
                 f"{callback_query.message.text}\n🤖 @{(await bot.get_me()).username}\n Main Channel: @Anime_S3kai",
                 reply_markup=None,
             )
-            await callback_query.message.edit(
-                text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
-                reply_markup=None,
-            )
+        await callback_query.message.edit(
+            text=f"t.me/{CHANNEL_ID[1:]}/{channel_message.message_id}",
+            reply_markup=None,
+        )
         await bot.send_message(user_id, accepted_message)
         return
 
@@ -205,22 +197,25 @@ async def banano(_, message: Message):
     await bot.send_message(user_id, banned_message)
 
 
-@bot.on_message(filters.command(['respond']))
+@bot.on_message(filters.command(["respond"]))
 async def respond_to_user(_, message: Message):
 
     try:
         args = message.text.split(None, 1)[1]
-        user_id = int(message.reply_to_message.reply_markup.inline_keyboard[0][0].callback_data.split('_')[1])
-        await bot.send_message(
-            user_id,
-            text=args
-            )
+        user_id = int(
+            message.reply_to_message.reply_markup.inline_keyboard[0][
+                0
+            ].callback_data.split("_")[1]
+        )
+        await bot.send_message(user_id, text=args)
     except IndexError:
-        await message.reply('Por favor agrega los argumentos XD so Juan.')
+        await message.reply("Por favor agrega los argumentos XD so Juan.")
     except AttributeError:
-        await message.reply('Responde al mensaje del usuario que quieres responder animal 🤧')
+        await message.reply(
+            "Responde al mensaje del usuario que quieres responder animal 🤧"
+        )
 
-    await message.reply('Se ha enviado su respuesta exitosamente.')
+    await message.reply("Se ha enviado su respuesta exitosamente.")
 
 
 async def init():
