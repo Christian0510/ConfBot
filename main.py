@@ -29,7 +29,7 @@ try:
 
     CHANNEL_ID = config("CHANNEL_ID", default=None)
 
-    ADMIN_GROUP = config("ADMIN_GROUP_ID", default=None)
+    ADMIN_GROUP = config("ADMIN_GROUP_ID", default=None, cast=int)
 
     DATABASE_URL = config("DATABASE_URL", default=None)
 except Exception as e:
